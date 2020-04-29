@@ -13,7 +13,7 @@ with open("README.md", "r") as f:
 
 dist = setup(
     name='snowflakedb-cli',
-    version='1.0.0',
+    version='1.0.1',
 	url='https://github.com/Rouhija/snowflake-cli',
 	description="A cli tool for automating tasks in Snowflake Database",
     long_description=long_description,
@@ -24,7 +24,7 @@ dist = setup(
     # test_suite="taskmaster.tests",
     entry_points={
         'console_scripts': [
-			'snowflake-cli = snowflake.snowflakectl:main',
+			'snowctl = snowctl.snowctl:main',
         ],
     },
     classifiers=[

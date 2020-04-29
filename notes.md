@@ -3,12 +3,11 @@
 # Test
 python setup.py develop
 # Compile
-python setup.py sdist
 python setup.py bdist_wheel
 # Upload
 python -m twine upload dist/*
 # Upgrade
-pip install YOURPACKAGE --upgrade
+pip install snowflakedb-cli --upgrade
 ```
 
 ### Reading
