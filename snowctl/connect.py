@@ -8,7 +8,9 @@ def snowflake_connect(conf):
             user=conf['user'],
             password=conf['password'],
             account=conf['account'],
-            warehouse=['warehouse']
+            warehouse=conf['warehouse'],
+            database=conf['database'],
+            schema='PUBLIC'
         )
         print('connected')
         return conn

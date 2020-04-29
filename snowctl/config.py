@@ -25,7 +25,8 @@ class Config:
                 account = 'snowflake_account'
                 user = 'snowflake_user'
                 password = 'snowflake_password'
-                wh = 'snowflake_warehouse'
+                wh = 'default_warehouse'
+                db = 'default_database'
 
                 if config_exists is False:
                     print('First time configuration, please provide following values')
@@ -36,9 +37,12 @@ class Config:
                 print('snowflake_user: ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
                 self.config_parser.set('snowflake', user, val)
-                print('snowflake_warehouse: ' , end='', flush=True)
+                print('default_warehouse: ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
                 self.config_parser.set('snowflake', wh, val)
+                print('default_database: ' , end='', flush=True)
+                val = sys.stdin.readline().replace('\n', '')
+                self.config_parser.set('snowflake', db, val)
                 print('snowflake_password: ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
                 self.config_parser.set('snowflake', password, val)
@@ -57,7 +61,8 @@ class Config:
             self.config_parser.read(self.config_path)
             r['account'] = self.config_parser['snowflake']['snowflake_account']
             r['user'] = self.config_parser['snowflake']['snowflake_user']
-            r['wh'] = self.config_parser['snowflake']['snowflake_warehouse']
+            r['warehouse'] = self.config_parser['snowflake']['default_warehouse']
+            r['database'] = self.config_parser['snowflake']['default_database']
             r['password'] = self.config_parser['snowflake']['snowflake_password']
             return r
         except KeyError as e:

@@ -12,8 +12,8 @@ with open("README.md", "r") as f:
     long_description = f.read()
 
 dist = setup(
-    name='snowflakedb-cli',
-    version='1.0.1',
+    name='snowflake-cli',
+    version='1.0.0',
 	url='https://github.com/Rouhija/snowflake-cli',
 	description="A cli tool for automating tasks in Snowflake Database",
     long_description=long_description,
