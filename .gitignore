@@ -3,3 +3,4 @@ dist/
 *.egg*
 venv/
 env/
+__pycache__
