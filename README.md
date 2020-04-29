@@ -1,9 +1,9 @@
 # Description
-A cli tool for automating tasks in Snowflake Database for python3
+A cli tool for automating tasks in Snowflake Database written in Python3
 
 ### Installation
 ```sh
-pip install snowflake-cli
+pip install snowctl
 ```
 
 ### Usage
@@ -29,5 +29,5 @@ optional arguments:
 | **help** | Display help |
 | **copy views** | copy views across schemas |
 | **show views** | show views in current context |
-| **use** database|schema|warehouse name | change context |
+| **use** database/schema/warehouse name | change context |
 | **exit** | Exit |
