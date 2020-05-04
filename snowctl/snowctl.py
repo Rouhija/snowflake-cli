@@ -1,13 +1,25 @@
 import sys
 import signal
 import logging
-import argparse
 from time import sleep
 from snowctl.config import Config
-from snowctl.utils import clear_screen, format_ddl
+from snowctl.arguments import arg_parser
+from snowctl.logger import logger_options
 from snowctl.connect import snowflake_connect
+from snowctl.utils import bcolors, clear_screen, format_ddl, parser
+
 
 LOG = logging.getLogger(__name__)
+
+
+def print_usage():
+    print('\nsnowctl usage:')
+    print('\tuse <database|schema|warehouse> <name>')
+    print('\tcopy views (in current context)')
+    print('\tshow views (in current context)')
+    print('\tsql <query>')
+    print('\texit|ctrl+C\n')
+
 
 class Controller:
     def __init__(self, conn, safe):
@@ -20,14 +32,17 @@ class Controller:
 
     def run_console(self):
         self.listen_signals()
+        print_usage()
         try:
             while self.run:
                 self.get_prompt()
-                print(self.prompt, end='', flush=True)
+                print(f'{bcolors.OKBLUE}{self.prompt}{bcolors.ENDC}', end='', flush=True)
                 cmd = sys.stdin.readline()
-                cmd = self.parse(cmd)
+                cmd = parser(cmd)
                 if cmd is not None:
                     self.operation(cmd)
+                else:
+                    print_usage()
         except Exception as e:
             LOG.error(e)
         finally:
@@ -36,13 +51,15 @@ class Controller:
     def operation(self, cmd: list):
         try:
             if cmd[0] == 'help':
-                self.usage()
+                print_usage()
             elif cmd[0] == 'copy':
                 self.copy_views()
             elif cmd[0] == 'show':
                 self.show_views()
             elif cmd[0] == 'use':
                 self.use(cmd)
+            elif cmd[0] == 'sql':
+                self.user_query(cmd)
             elif cmd[0] == 'exit':
                 self.exit_console()
             return True
@@ -55,6 +72,13 @@ class Controller:
         self.cursor.execute(f"use {cmd[1]} {cmd[2]}")
         response = self.cursor.fetchone()
         print(response[0])        
+
+    def user_query(self, cmd: list):
+        cmd.pop(0)
+        query = ' '.join(cmd)
+        response = self.execute_query(query)
+        for row in response:
+            print(row)
 
     def show_views(self):
         rows = self.execute_query('show views')
@@ -117,7 +141,7 @@ class Controller:
                         continue
                 self.cursor.execute(query)
                 response = self.cursor.fetchone()
-                print(f'{response[0]} ({self.curr_db}.{schema})')
+                print(f'{response[0]} (target: {self.curr_db}.{schema})')
 
     def ask_confirmation(self, query):
         print(f'\n{query}')
@@ -127,13 +151,6 @@ class Controller:
             return True
         else:
             return False
-
-    def usage(self):
-        print('snowctl usage:')
-        print('\tuse <database|schema|warehouse> <name>')
-        print('\tcopy views (in current context)')
-        print('\tshow views (in current context)')
-        print('\texit')
 
     def execute_query(self, query):
         LOG.debug(f'executing:\n{query}')
@@ -145,20 +162,6 @@ class Controller:
                 break
             results.append(row)
         return results
-
-    def parse(self, cmd: str):
-        cmd = cmd.replace('\n', '')
-        ls = cmd.split(' ')
-        if ls[0] == 'use' and len(ls) != 3:
-            self.usage()
-            return None
-        elif ls[0] == 'copy' and ls[1] != 'views':
-            self.usage()
-            return None
-        elif ls[0] == 'show' and ls[1] != 'views':
-            self.usage()
-            return None
-        return ls
 
     def get_prompt(self):
         prompt = ''
@@ -193,30 +196,7 @@ class Controller:
 
     def signal_handler(self, signum, frame):
         if signum == signal.SIGINT or signum == signal.SIGTERM:
-            self.exit_console()           
-
-
-def arg_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--debug", help="log to console", action="store_true")
-    parser.add_argument("-s", "--safe", help="ask for confirmation before executing any operations", action="store_true")
-    parser.add_argument("-c", "--configuration", help="re-input configuration values", action="store_true")
-    return parser.parse_args()
-
-
-def logger_options(debug: int):
-    if debug:
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(levelname)s:%(asctime)s ⁠— %(message)s',
-            datefmt='%d/%m/%Y %H:%M:%S'
-    )
-    else:
-         logging.basicConfig(
-            level=logging.ERROR,
-            format='%(levelname)s:%(asctime)s ⁠— %(message)s',
-            datefmt='%d/%m/%Y %H:%M:%S'
-    )       
+            self.exit_console()
 
 
 def main():
