@@ -6,7 +6,7 @@ from snowctl.config import Config
 from snowctl.arguments import arg_parser
 from snowctl.logger import logger_options
 from snowctl.connect import snowflake_connect
-from snowctl.utils import bcolors, clear_screen, format_ddl, parser
+from snowctl.utils import clear_screen, format_ddl, parser
 
 
 LOG = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class Controller:
         try:
             while self.run:
                 self.get_prompt()
-                print(f'{bcolors.OKBLUE}{self.prompt}{bcolors.ENDC}', end='', flush=True)
+                print(self.prompt, end='', flush=True)
                 cmd = sys.stdin.readline()
                 cmd = parser(cmd)
                 if cmd is not None:
@@ -62,11 +62,8 @@ class Controller:
                 self.user_query(cmd)
             elif cmd[0] == 'exit':
                 self.exit_console()
-            return True
         except Exception as e:
-            print('Error, try again.')
-            print(e)
-            return False
+            print(f'Error, try again. {e}')
 
     def use(self, cmd: list):
         self.cursor.execute(f"use {cmd[1]} {cmd[2]}")
