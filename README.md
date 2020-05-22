@@ -14,20 +14,23 @@ snowctl
 
 Optional arguments
 ```
-usage: snowctl [-h] [-d] [-s] [-c]
+usage: snowctl [-h] [-d] [-s] [-c] [-e]
 
 optional arguments:
   -h, --help           show this help message and exit
-  -d, --debug          debug logs to console
-  -s, --safe           ask for confirmation before executing any potentially destructive operations
-  -c, --configuration  re-enter Snowflake configuration
+  -d, --debug          log to console
+  -s, --safe           ask for confirmation before executing any operations
+  -c, --configuration  re-input configuration values
+  -e, --echo           echo configuration values
 ```
 
 ### Commands
 | CMD | ACTION |
 |---------|---------|
 | **help** | Display help |
-| **copy views** | copy views across schemas |
-| **show views** | show views in current context |
 | **use** database/schema/warehouse name | change context |
+| **copy views** | copy views across schemas |
+| **copy views filter** | copy views across schemas with column filtering |
+| **show views** | show views in current context |
+| **sql** query | execute sql query |
 | **exit** | Exit |

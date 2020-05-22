@@ -17,7 +17,7 @@ def print_usage():
     print('\tcopy views - copy view(s) in currect context to other schemas as is')
     print('\tcopy views filter - copy view(s) in currect context to other schemas and choose columns to filter')
     print('\tshow views')
-    print('\tsql <query>')
+    print('\tsql <query> - execute sql query')
     print('\texit|ctrl+C\n')
 
 
