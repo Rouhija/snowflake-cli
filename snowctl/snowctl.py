@@ -11,6 +11,14 @@ from snowctl.connect import snowflake_connect
 
 LOG = logging.getLogger(__name__)
 
+BANNER = """\
+    --..,_                     _,.--.
+       `'.'.                .'`__ o  `;__.
+          '.'.            .'.'`  '---'`  `
+            '.`'--....--'`.'
+              `'--....--'`
+"""
+
 def print_usage():
     print('\nsnowctl usage:')
     print('\tuse <database|schema|warehouse> <name>')
@@ -37,8 +45,8 @@ class Controller:
             while self.run:
                 self.get_prompt()
                 print(self.prompt, end='', flush=True)
-                _input = sys.stdin.readline()
-                cmd = parser(_input)
+                user_input = sys.stdin.readline()
+                cmd = parser(user_input)
                 if cmd is not None:
                     self.operation(cmd)
                 else:
@@ -86,63 +94,9 @@ class Controller:
             print(f'{i} - {row[1]}')
 
     def copy_views(self, filter_cols=False):
-        clear_screen()
-
-        # Prompt for view(s) to copy
-        views = []
-        rows = self.execute_query('show views')
-        for i, row in enumerate(rows):
-            views.append(row[1])
-            print(f'{i} - {row[1]}')
-        print('choose view(s) to copy ([int, int, ...]|all): ', end='', flush=True)
-        user_input = sys.stdin.readline().replace('\n', '').strip().split(',')
-
-        # Choose views
-        copy_these = []
-        if user_input[0] == 'all':
-            copy_these = views
-        else:
-            for index in user_input:
-                copy_these.append(views[int(index)])
-
-        # Get ddl for chosen views
-        print(f'chose view(s) {", ".join(copy_these)}')
-        ddls = []
-        for copy_this in copy_these:
-            ddls.append(self.execute_query(f"select GET_DDL('view', '{copy_this}')")[0][0].replace('\n', ''))
-        
-        # Prompt for schema(s) to copy into
-        schemas = []
-        rows = self.execute_query('show schemas')
-        rows.pop(0)
-        for i, row in enumerate(rows):
-            schemas.append(row[1])
-            print(f'{i} - {row[1]}')
-        print(f'copy into to ([int, int, ...]|all): ', end='', flush=True)
-        user_input = sys.stdin.readline().replace('\n', '').strip().split(',')
-
-        # Choose schemas
-        copy_into = []
-        if user_input[0] == 'all':
-            copy_into = schemas
-        else:
-            for index in user_input:
-                copy_into.append(schemas[int(index)])
-
-        # Execute
-        print(f'chose schema(s) {", ".join(copy_into)}')
-        for i, view in enumerate(copy_these):
-            for schema in copy_into:
-                query = format_ddl(ddls[i], view, schema, self.curr_db)
-                if filter_cols:
-                    query = filter_ddl(query, self.curr_db, schema)
-                if self.safe_mode:
-                    y = self.ask_confirmation(query)
-                    if not y:
-                        continue
-                self.cursor.execute(query)
-                response = self.cursor.fetchone()
-                print(f'{response[0]} (target: {self.curr_db}.{schema})')
+        from snowctl.copy import Copycat
+        cp = Copycat(self.conn, self.safe_mode)
+        cp.copy_views(self.curr_db, filter_cols)
 
     def ask_confirmation(self, query):
         print(f'\n{query}')
@@ -201,6 +155,7 @@ class Controller:
 
 
 def main():
+    print(BANNER)
     args = arg_parser()
     conf = Config()
     if args.echo:

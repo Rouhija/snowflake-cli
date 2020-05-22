@@ -21,7 +21,7 @@ dist = setup(
     author="Sami Rouhe",
     author_email="rouhesami@gmail.com",
 	packages=find_packages(),
-    install_requires=['snowflake-connector-python', 'pynput'],
+    install_requires=['snowflake-connector-python'],
     entry_points={
         'console_scripts': [
 			'snowctl = snowctl.snowctl:main',

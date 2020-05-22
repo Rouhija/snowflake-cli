@@ -1,5 +1,5 @@
 # Description
-A cli tool for automating tasks in Snowflake Database written in Python3
+A cli tool for automating tasks in Snowflake Database. Mainly for copying views with column filtering at the moment.
 
 ### Installation
 ```sh
