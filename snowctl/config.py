@@ -50,7 +50,7 @@ class Config:
                 with open(self.config_path, 'w') as f:
                     self.config_parser.write(f)
             except KeyboardInterrupt:
-                print('\nconfig file was not updated')
+                sys.exit('\nconfig file was not updated')
             except Exception as e:
                 sys.exit(f'error while writing configuration: {e}')
         return

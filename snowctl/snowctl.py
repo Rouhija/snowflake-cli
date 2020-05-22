@@ -12,11 +12,10 @@ from snowctl.connect import snowflake_connect
 LOG = logging.getLogger(__name__)
 
 BANNER = """\
-    --..,_                     _,.--.
-       `'.'.                .'`__ o  `;__.
-          '.'.            .'.'`  '---'`  `
-            '.`'--....--'`.'
-              `'--....--'`
+ __        __        __  ___      
+/__` |\ | /  \ |  | /  `  |  |    
+.__/ | \| \__/ |/\| \__,  |  |___ 
+                                 
 """
 
 def print_usage():
@@ -155,12 +154,12 @@ class Controller:
 
 
 def main():
-    print(BANNER)
     args = arg_parser()
     conf = Config()
     if args.echo:
         conf.echo_config()
     else:
+        print(BANNER)
         conf.write_config(args.configuration)
         logger_options(args.debug)
         conn = snowflake_connect(conf.read_config())
