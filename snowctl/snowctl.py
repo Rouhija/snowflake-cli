@@ -2,21 +2,21 @@ import sys
 import signal
 import logging
 from time import sleep
+from snowctl.utils import *
 from snowctl.config import Config
 from snowctl.arguments import arg_parser
 from snowctl.logger import logger_options
 from snowctl.connect import snowflake_connect
-from snowctl.utils import clear_screen, format_ddl, parser
 
 
 LOG = logging.getLogger(__name__)
 
-
 def print_usage():
     print('\nsnowctl usage:')
     print('\tuse <database|schema|warehouse> <name>')
-    print('\tcopy views (in current context)')
-    print('\tshow views (in current context)')
+    print('\tcopy views - copy view(s) in currect context to other schemas as is')
+    print('\tcopy views filter - copy view(s) in currect context to other schemas and choose columns to filter')
+    print('\tshow views')
     print('\tsql <query>')
     print('\texit|ctrl+C\n')
 
@@ -37,12 +37,12 @@ class Controller:
             while self.run:
                 self.get_prompt()
                 print(self.prompt, end='', flush=True)
-                cmd = sys.stdin.readline()
-                cmd = parser(cmd)
+                _input = sys.stdin.readline()
+                cmd = parser(_input)
                 if cmd is not None:
                     self.operation(cmd)
                 else:
-                    print_usage()
+                    print('command not found')
         except Exception as e:
             LOG.error(e)
         finally:
@@ -53,7 +53,10 @@ class Controller:
             if cmd[0] == 'help':
                 print_usage()
             elif cmd[0] == 'copy':
-                self.copy_views()
+                if len(cmd) == 2:
+                    self.copy_views()
+                else:
+                    self.copy_views(True)
             elif cmd[0] == 'show':
                 self.show_views()
             elif cmd[0] == 'use':
@@ -63,7 +66,7 @@ class Controller:
             elif cmd[0] == 'exit':
                 self.exit_console()
         except Exception as e:
-            print(f'Error, try again. {e}')
+            print(f'Error. {e}')
 
     def use(self, cmd: list):
         self.cursor.execute(f"use {cmd[1]} {cmd[2]}")
@@ -82,7 +85,7 @@ class Controller:
         for i, row in enumerate(rows):
             print(f'{i} - {row[1]}')
 
-    def copy_views(self):
+    def copy_views(self, filter_cols=False):
         clear_screen()
 
         # Prompt for view(s) to copy
@@ -111,9 +114,8 @@ class Controller:
         # Prompt for schema(s) to copy into
         schemas = []
         rows = self.execute_query('show schemas')
+        rows.pop(0)
         for i, row in enumerate(rows):
-            if row[1] == 'INFORMATION_SCHEMA':
-                continue
             schemas.append(row[1])
             print(f'{i} - {row[1]}')
         print(f'copy into to ([int, int, ...]|all): ', end='', flush=True)
@@ -132,6 +134,8 @@ class Controller:
         for i, view in enumerate(copy_these):
             for schema in copy_into:
                 query = format_ddl(ddls[i], view, schema, self.curr_db)
+                if filter_cols:
+                    query = filter_ddl(query, self.curr_db, schema)
                 if self.safe_mode:
                     y = self.ask_confirmation(query)
                     if not y:
@@ -199,11 +203,14 @@ class Controller:
 def main():
     args = arg_parser()
     conf = Config()
-    conf.write_config(args.configuration)
-    logger_options(args.debug)
-    conn = snowflake_connect(conf.read_config())
-    c = Controller(conn, args.safe)
-    c.run_console()
+    if args.echo:
+        conf.echo_config()
+    else:
+        conf.write_config(args.configuration)
+        logger_options(args.debug)
+        conn = snowflake_connect(conf.read_config())
+        c = Controller(conn, args.safe)
+        c.run_console()
 
 
 if __name__ == '__main__':

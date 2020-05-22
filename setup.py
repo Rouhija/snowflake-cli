@@ -13,7 +13,7 @@ with open("README.md", "r") as f:
 
 dist = setup(
     name='snowctl',
-    version='1.0.1',
+    version='1.0.2',
 	url='https://github.com/Rouhija/snowflake-cli',
 	description="A cli tool for automating tasks in Snowflake Database",
     long_description=long_description,
@@ -21,7 +21,7 @@ dist = setup(
     author="Sami Rouhe",
     author_email="rouhesami@gmail.com",
 	packages=find_packages(),
-    install_requires=['snowflake-connector-python'],
+    install_requires=['snowflake-connector-python', 'pynput'],
     entry_points={
         'console_scripts': [
 			'snowctl = snowctl.snowctl:main',

@@ -66,4 +66,12 @@ class Config:
             r['password'] = self.config_parser['snowflake']['snowflake_password']
             return r
         except KeyError as e:
-            sys.exit('missing values in configuration: {e}')
+            sys.exit(f'missing values in configuration: {e}')
+
+    def echo_config(self):
+        c = self.read_config()
+        print('\ncurrent configuration')
+        for k, v in c.items():
+            if k == 'password':
+                v = '***'
+            print(f'  {k}: {v}')

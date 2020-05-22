@@ -7,7 +7,7 @@ pip install snowctl
 ```
 
 ### Usage
-Run in interactive mode (prompts for conf on the first run)
+Run in interactive mode (prompts for configuration on the first run)
 ```sh
 snowctl
 ```
