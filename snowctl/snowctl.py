@@ -23,7 +23,8 @@ def print_usage():
     print('\tuse <database|schema|warehouse> <name>')
     print('\tcopy views - copy view(s) in currect context to other schemas as is')
     print('\tcopy views filter - copy view(s) in currect context to other schemas and choose columns to filter')
-    print('\tshow views')
+    print('\tlist views <filter> - list views in current context with an optional filter')
+    print('\tpeek <view> - show first row of data from the view')
     print('\tsql <query> - execute sql query')
     print('\texit|ctrl+C\n')
 
@@ -36,6 +37,7 @@ class Controller:
         self.run = True
         self.prompt = 'snowctl> '
         self.curr_db = None
+        self.curr_schema = None
 
     def run_console(self):
         self.listen_signals()
@@ -46,9 +48,7 @@ class Controller:
                 print(self.prompt, end='', flush=True)
                 user_input = sys.stdin.readline()
                 cmd = parser(user_input)
-                if cmd is not None:
-                    self.operation(cmd)
-                else:
+                if self.operation(cmd) is -1:
                     print('command not found')
         except Exception as e:
             LOG.error(e)
@@ -64,14 +64,18 @@ class Controller:
                     self.copy_views()
                 else:
                     self.copy_views(True)
-            elif cmd[0] == 'show':
-                self.show_views()
+            elif cmd[0] == 'list':
+                self.list_views(cmd)
+            elif cmd[0] == 'peek':
+                self.peek(cmd[1])
             elif cmd[0] == 'use':
                 self.use(cmd)
             elif cmd[0] == 'sql':
                 self.user_query(cmd)
             elif cmd[0] == 'exit':
                 self.exit_console()
+            else:
+                return -1
         except Exception as e:
             print(f'Error. {e}')
 
@@ -87,10 +91,21 @@ class Controller:
         for row in response:
             print(row)
 
-    def show_views(self):
+    def peek(self, view):
+        row = self.execute_query(f'select * from {self.curr_db}.{self.curr_schema}.{view} limit 1')
+        print(row)
+
+    def list_views(self, cmd):
+        filter = False
+        if len(cmd) == 3:
+            filter = cmd[2]
         rows = self.execute_query('show views')
         for i, row in enumerate(rows):
-            print(f'{i} - {row[1]}')
+            if filter:
+                if filter.lower() in row[1].lower():
+                    print(f'{i} - {row[1]}')
+            else:
+                print(f'{i} - {row[1]}')
 
     def copy_views(self, filter_cols=False):
         from snowctl.copy import Copycat
@@ -130,6 +145,7 @@ class Controller:
             self.curr_db = db
         if schema is not None:
             prompt += f'{schema}:'
+            self.curr_schema = schema
         if not len(prompt):
             self.prompt = 'snowctl> '
         else:

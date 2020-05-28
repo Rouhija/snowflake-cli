@@ -56,8 +56,10 @@ def parser(cmd: str):
     elif ls[0] == 'copy' and len(ls) == 3:
         if ls[2] != 'filter':
             return None
-    elif ls[0] == 'show' and ls[1] != 'views':
+    elif ls[0] == 'list' and ls[1] != 'views':
         return None
     elif ls[0] == 'sql' and len(ls) < 2:
+        return None
+    elif ls[0] == 'peek' and len(ls) is not 2:
         return None
     return ls
