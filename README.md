@@ -19,7 +19,7 @@ usage: snowctl [-h] [-d] [-s] [-c] [-e]
 optional arguments:
   -h, --help           show this help message and exit
   -d, --debug          log to console
-  -s, --safe           ask for confirmation before executing any operations
+  -s, --safe           ask for confirmation before executing copy operations
   -c, --configuration  re-input configuration values
   -e, --echo           echo configuration values
 ```

@@ -25,7 +25,9 @@ class Copycat(Controller):
         views = self.get_views()
         user_input = self.prompt_input('choose view(s) to copy ([int, int, ...]|all): ')
         copy_these = []
-        if user_input[0] == 'all':
+        if user_input == ['']:
+            return None
+        elif user_input[0] == 'all':
             copy_these = views
         else:
             for index in user_input:
@@ -53,7 +55,9 @@ class Copycat(Controller):
         schemas = self.get_schemas()
         user_input = self.prompt_input('copy into ([int, int, ...]|all): ')
         copy_into = []
-        if user_input[0] == 'all':
+        if user_input == ['']:
+            return None
+        elif user_input[0] == 'all':
             copy_into = schemas
         else:
             for index in user_input:
@@ -62,10 +66,15 @@ class Copycat(Controller):
         return copy_into
 
     def copy_views(self, db, filter_cols=False):
+        errors = 0
         clear_screen()
         copy_these = self.select_views()
+        if copy_these is None:
+            return
         ddls = self.get_ddls(copy_these)
         copy_into = self.select_schemas()
+        if copy_into is None:
+            return
         if filter_cols:
             clear_screen()    
         for i, view in enumerate(copy_these):
@@ -76,6 +85,21 @@ class Copycat(Controller):
                 if self.safe_mode:
                     if not self.ask_confirmation(query):
                         continue
-                self.cursor.execute(query)
-                response = self.cursor.fetchone()
+                try:
+                    self.cursor.execute(query)
+                    response = self.cursor.fetchone()
+                except Exception as e:
+                    print(e)
+                    errors += 1
+                    continue
                 print(f'{response[0]} (target: {db}.{schema})')
+        print(f'\ncopy views finished: {errors} errors\n')
+
+    def ask_confirmation(self, query):
+        print(f'\n{query}')
+        print(f'Confirm? (y/n): ', end='', flush=True)
+        user_input = sys.stdin.readline().replace('\n', '').strip()
+        if user_input == 'y':
+            return True
+        else:
+            return False

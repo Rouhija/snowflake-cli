@@ -78,6 +78,7 @@ class Controller:
                 return -1
         except Exception as e:
             print(f'Error. {e}')
+            return -2
 
     def use(self, cmd: list):
         self.cursor.execute(f"use {cmd[1]} {cmd[2]}")
@@ -111,15 +112,6 @@ class Controller:
         from snowctl.copy import Copycat
         cp = Copycat(self.conn, self.safe_mode)
         cp.copy_views(self.curr_db, filter_cols)
-
-    def ask_confirmation(self, query):
-        print(f'\n{query}')
-        print(f'Confirm? (y/n): ', end='', flush=True)
-        user_input = sys.stdin.readline().replace('\n', '').strip()
-        if user_input == 'y':
-            return True
-        else:
-            return False
 
     def execute_query(self, query):
         LOG.debug(f'executing:\n{query}')
