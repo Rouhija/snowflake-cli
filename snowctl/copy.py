@@ -6,8 +6,8 @@ class Copycat(Controller):
     """
     Subclass of Controller to handle view copying
     """
-    def __init__(self, conn, safe):
-        super().__init__(conn, safe)
+    def __init__(self, conn, engine, safe):
+        super().__init__(conn, engine, safe)
 
     def prompt_input(self, msg):
         print(msg, end='', flush=True)
@@ -86,8 +86,8 @@ class Copycat(Controller):
                     if not self.ask_confirmation(query):
                         continue
                 try:
-                    self.cursor.execute(query)
-                    response = self.cursor.fetchone()
+                    results = self.connection.execute(query)
+                    response = results.fetchone()
                 except Exception as e:
                     print(e)
                     errors += 1

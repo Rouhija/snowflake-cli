@@ -1,4 +1,5 @@
 import sys
+import getpass
 import os.path
 from configparser import ConfigParser
 from os.path import dirname, realpath
@@ -43,8 +44,7 @@ class Config:
                 print('default_database: ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
                 self.config_parser.set('snowflake', db, val)
-                print('snowflake_password: ' , end='', flush=True)
-                val = sys.stdin.readline().replace('\n', '')
+                val = getpass.getpass('snowflake_password: ')
                 self.config_parser.set('snowflake', password, val)
 
                 with open(self.config_path, 'w') as f:

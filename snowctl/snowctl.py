@@ -30,9 +30,9 @@ def print_usage():
 
 
 class Controller:
-    def __init__(self, conn, safe):
-        self.conn = conn
-        self.cursor = conn.cursor()
+    def __init__(self, conn, engine, safe):
+        self.connection = conn
+        self.engine = engine
         self.safe_mode = safe
         self.run = True
         self.prompt = 'snowctl> '
@@ -81,8 +81,8 @@ class Controller:
             return -2
 
     def use(self, cmd: list):
-        self.cursor.execute(f"use {cmd[1]} {cmd[2]}")
-        response = self.cursor.fetchone()
+        results = self.connection.execute(f"use {cmd[1]} {cmd[2]}")
+        response = results.fetchone()
         print(response[0])        
 
     def user_query(self, cmd: list):
@@ -110,19 +110,19 @@ class Controller:
 
     def copy_views(self, filter_cols=False):
         from snowctl.copy import Copycat
-        cp = Copycat(self.conn, self.safe_mode)
+        cp = Copycat(self.connection, self.engine, self.safe_mode)
         cp.copy_views(self.curr_db, filter_cols)
 
     def execute_query(self, query):
         LOG.debug(f'executing:\n{query}')
-        self.cursor.execute(query)
-        results = []
+        ret = []
+        results = self.connection.execute(query)
         while True:
-            row = self.cursor.fetchone()
+            row = results.fetchone()
             if not row:
                 break
-            results.append(row)
-        return results
+            ret.append(row)
+        return ret
 
     def get_prompt(self):
         prompt = ''
@@ -147,8 +147,8 @@ class Controller:
     def exit_console(self):
         print('closing connections...')
         try:
-            self.cursor.close()
-            self.conn.close()
+            self.connection.close()
+            self.engine.dispose()
         finally:
             sys.exit('exit')
 
@@ -170,9 +170,13 @@ def main():
         print(BANNER)
         conf.write_config(args.configuration)
         logger_options(args.debug)
-        conn = snowflake_connect(conf.read_config())
-        c = Controller(conn, args.safe)
-        c.run_console()
+        conn, engine = snowflake_connect(conf.read_config())
+        try:
+            c = Controller(conn, engine, args.safe)
+            c.run_console()
+        finally:
+            conn.close()
+            engine.dispose()
 
 
 if __name__ == '__main__':
