@@ -2,6 +2,11 @@
 A cli tool for automating tasks in Snowflake Database. Mainly for copying views with column filtering at the moment.
 
 ### Installation
+Install python3 (version 3.6 and higher)
+- [Windows installation](https://www.python.org/downloads/release/python-385/)
+- [Linux installation](https://docs.python-guide.org/starting/install3/linux/)
+
+Use Python's pip installer to install snowctl
 ```sh
 pip install snowctl
 ```
@@ -22,6 +27,7 @@ optional arguments:
   -s, --safe           ask for confirmation before executing copy operations
   -c, --configuration  re-input configuration values
   -e, --echo           echo configuration values
+  -v, --version        display snowctl version
 ```
 
 ### Commands
@@ -31,6 +37,13 @@ optional arguments:
 | **use** database/schema/warehouse name | change context |
 | **copy views** | copy views across schemas |
 | **copy views filter** | copy views across schemas with column filtering |
-| **show views** | show views in current context |
+| **list views** filter | list views in current context with an optional filter |
+| **peek** view | display first row from a view |
 | **sql** query | execute sql query |
 | **exit** | Exit |
+
+### to-do
+- exit command and return to shell
+- parse out snowflakecomputing.com in config
+- check crypthography issue on linux
+- check getpass in config

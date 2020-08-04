@@ -4,16 +4,15 @@ import os
 import sys
 
 py_version = sys.version_info[:2]
-if not (3, 5) < py_version < (3, 9):
-    raise RuntimeError('snowflake-cli needs Python version 3.6 - 3.8 to run')
-
+if not (3, 5) < py_version < (4, 0):
+    raise RuntimeError('snowctl needs Python version 3.6 - 3.9 to run')
 
 with open("README.md", "r") as f:
     long_description = f.read()
 
 dist = setup(
     name='snowctl',
-    version='1.0.5',
+    version='1.0.6',
 	url='https://github.com/Rouhija/snowflake-cli',
 	description="A cli tool for automating tasks in Snowflake Database",
     long_description=long_description,

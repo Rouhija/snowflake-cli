@@ -1,6 +1,7 @@
 import sys
 import signal
 import logging
+import pkg_resources
 from time import sleep
 from snowctl.utils import *
 from snowctl.config import Config
@@ -8,6 +9,7 @@ from snowctl.arguments import arg_parser
 from snowctl.logger import logger_options
 from snowctl.connect import snowflake_connect
 
+VERSION = pkg_resources.require('snowctl')[0].version
 
 LOG = logging.getLogger(__name__)
 
@@ -166,6 +168,8 @@ def main():
     conf = Config()
     if args.echo:
         conf.echo_config()
+    elif args.version:
+        print(VERSION)
     else:
         print(BANNER)
         conf.write_config(args.configuration)

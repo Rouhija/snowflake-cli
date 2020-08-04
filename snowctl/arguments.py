@@ -7,4 +7,5 @@ def arg_parser():
     parser.add_argument("-s", "--safe", help="ask for confirmation before executing copy operations", action="store_true")
     parser.add_argument("-c", "--configuration", help="re-input configuration values", action="store_true")
     parser.add_argument("-e", "--echo", help="echo configuration values", action="store_true")
+    parser.add_argument("-v", "--version", help="display snowctl version", action="store_true")
     return parser.parse_args()
