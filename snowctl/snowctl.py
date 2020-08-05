@@ -24,11 +24,12 @@ def print_usage():
     print('\nsnowctl usage:')
     print('\tuse <database|schema|warehouse> <name>')
     print('\tcopy views - copy view(s) in currect context to other schemas as is')
+    print('\tcopy views rename - copy view(s) in currect context to other schemas and rename')
     print('\tcopy views filter - copy view(s) in currect context to other schemas and choose columns to filter')
     print('\tlist views <filter> - list views in current context with an optional filter')
     print('\tpeek <view> - show first row of data from the view')
     print('\tsql <query> - execute sql query')
-    print('\texit|ctrl+C\n')
+    print('\texit / ctrl+C\n')
 
 
 class Controller:
@@ -50,7 +51,7 @@ class Controller:
                 print(self.prompt, end='', flush=True)
                 user_input = sys.stdin.readline()
                 cmd = parser(user_input)
-                if self.operation(cmd) is -1:
+                if self.operation(cmd) == -1:
                     print('command not found')
         except Exception as e:
             LOG.error(e)
@@ -64,8 +65,10 @@ class Controller:
             elif cmd[0] == 'copy':
                 if len(cmd) == 2:
                     self.copy_views()
-                else:
-                    self.copy_views(True)
+                elif cmd[2] == 'filter':
+                    self.copy_views(filter_cols=True)
+                elif cmd[2] == 'rename':
+                    self.copy_views(rename=True)
             elif cmd[0] == 'list':
                 self.list_views(cmd)
             elif cmd[0] == 'peek':
@@ -110,10 +113,10 @@ class Controller:
             else:
                 print(f'{i} - {row[1]}')
 
-    def copy_views(self, filter_cols=False):
+    def copy_views(self, filter_cols=False, rename=False):
         from snowctl.copy import Copycat
         cp = Copycat(self.connection, self.engine, self.safe_mode)
-        cp.copy_views(self.curr_db, filter_cols)
+        cp.copy_views(self.curr_db, filter_cols=filter_cols, rename=rename)
 
     def execute_query(self, query):
         LOG.debug(f'executing:\n{query}')

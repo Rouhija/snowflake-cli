@@ -17,10 +17,6 @@ pip install snowctl --upgrade
 ### Reading
 - [PyPi](https://dzone.com/articles/executable-package-pip-install)
 
-Moi,
-
- 
-
 Tässä pari juttua, mitä vielä tarvittaisiin snowctl-ohjelmaan (laitettu prioriteettijärjestyksessä):
 
 Näkymän kopiointi vanhan näkymän päälle (COPY OR REPLACE VIEW…)

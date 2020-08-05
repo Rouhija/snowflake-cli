@@ -39,6 +39,8 @@ class Copycat(Controller):
         ddls = []
         for view in views:
             ddl = self.execute_query(f"select GET_DDL('view', '{view}')")[0][0]
+            # TO-DO
+            # format ddl if not `create or replace view` -> change it
             ddls.append(ddl)
         return ddls
 
@@ -65,7 +67,7 @@ class Copycat(Controller):
         print(f'chose schema(s) {", ".join(copy_into)}')
         return copy_into
 
-    def copy_views(self, db, filter_cols=False):
+    def copy_views(self, db, filter_cols=False, rename=False):
         errors = 0
         clear_screen()
         copy_these = self.select_views()
@@ -80,8 +82,10 @@ class Copycat(Controller):
         for i, view in enumerate(copy_these):
             for schema in copy_into:
                 query = format_ddl(ddls[i], view, schema, db)
-                if filter_cols:
+                if filter_cols is True:
                     query = filter_ddl(query, view, db, schema)
+                if rename is True:
+                    query = rename_target(query, view, db, schema)
                 if self.safe_mode:
                     if not self.ask_confirmation(query):
                         continue

@@ -36,6 +36,7 @@ optional arguments:
 | **help** | Display help |
 | **use** database/schema/warehouse name | change context |
 | **copy views** | copy views across schemas |
+| **copy views rename** | copy views across schemas with new name |
 | **copy views filter** | copy views across schemas with column filtering |
 | **list views** filter | list views in current context with an optional filter |
 | **peek** view | display first row from a view |
@@ -46,4 +47,5 @@ optional arguments:
 - exit command and return to shell
 - parse out snowflakecomputing.com in config
 - check crypthography issue on linux
-- check getpass in config
+- use flags in copy views instead of different commands
+- if not `create or replace view` -> change it

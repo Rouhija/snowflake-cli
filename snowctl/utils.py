@@ -46,6 +46,20 @@ def filter_ddl(ddl, view, db, schema):
     return new_ddl
 
 
+def rename_target(ddl, view, db, schema):
+    print(ddl)
+    regexp = re.compile('(.*create.* view )(\S*)( as.*)', re.IGNORECASE)
+    start = regexp.search(ddl).group(1).strip()
+    name = regexp.search(ddl).group(2).strip()
+    end = regexp.search(ddl).group(3).strip()
+    print(f'\n{view}: target -> {db}.{schema}')
+    print('choose a new name for the view: ', end='', flush=True)
+    new_name = sys.stdin.readline().replace('\n', '').strip()
+    path = f'{db}.{schema}.{new_name}'
+    new_ddl = f'{start} {path} {end}'
+    return new_ddl
+
+
 def parser(cmd: str):
     cmd = cmd.replace('\n', '')
     ls = cmd.split(' ')
@@ -54,12 +68,12 @@ def parser(cmd: str):
     elif ls[0] == 'copy' and ls[1] != 'views':
         return None
     elif ls[0] == 'copy' and len(ls) == 3:
-        if ls[2] != 'filter':
+        if ls[2] != 'filter' and ls[2] != 'rename':
             return None
     elif ls[0] == 'list' and ls[1] != 'views':
         return None
     elif ls[0] == 'sql' and len(ls) < 2:
         return None
-    elif ls[0] == 'peek' and len(ls) is not 2:
+    elif ls[0] == 'peek' and len(ls) != 2:
         return None
     return ls
