@@ -5,14 +5,12 @@ import pkg_resources
 from time import sleep
 from snowctl.utils import *
 from snowctl.config import Config
-from snowctl.arguments import arg_parser
 from snowctl.logger import logger_options
 from snowctl.connect import snowflake_connect
+from snowctl.arguments import arg_parser, cmd_parser
 
 VERSION = pkg_resources.require('snowctl')[0].version
-
 LOG = logging.getLogger(__name__)
-
 BANNER = """\
  __        __        __  ___      
 /__` |\ | /  \ |  | /  `  |  |    
@@ -23,9 +21,9 @@ BANNER = """\
 def print_usage():
     print('\nsnowctl usage:')
     print('\tuse <database|schema|warehouse> <name>')
-    print('\tcopy views - copy view(s) in currect context to other schemas as is')
-    print('\tcopy views rename - copy view(s) in currect context to other schemas and rename')
-    print('\tcopy views filter - copy view(s) in currect context to other schemas and choose columns to filter')
+    print('\tcopy views [-f] [-r] - copy view(s) in currect context to other schemas as is')
+    print('\t\t[-f] - filter target view columns')
+    print('\t\t[-r] - rename target view')
     print('\tlist views <filter> - list views in current context with an optional filter')
     print('\tpeek <view> - show first row of data from the view')
     print('\tsql <query> - execute sql query')
@@ -63,12 +61,12 @@ class Controller:
             if cmd[0] == 'help':
                 print_usage()
             elif cmd[0] == 'copy':
-                if len(cmd) == 2:
-                    self.copy_views()
-                elif cmd[2] == 'filter':
-                    self.copy_views(filter_cols=True)
-                elif cmd[2] == 'rename':
-                    self.copy_views(rename=True)
+                try:
+                    args = cmd_parser(cmd[2:])
+                except Exception as e:
+                    print(e)
+                    pass
+                self.copy_views(filter_cols=args.filter, rename=args.rename)
             elif cmd[0] == 'list':
                 self.list_views(cmd)
             elif cmd[0] == 'peek':

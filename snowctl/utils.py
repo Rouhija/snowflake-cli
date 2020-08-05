@@ -6,7 +6,6 @@ import sys
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-
 def format_ddl(ddl, view_name, target_schema, database):
     tokens = ddl.split()
     for i, token in enumerate(tokens):
@@ -15,7 +14,6 @@ def format_ddl(ddl, view_name, target_schema, database):
             break
     new_ddl = ' '.join(tokens)
     return new_ddl
-
 
 def filter_columns(cols: str, view, db, schema):
     r = []
@@ -35,7 +33,6 @@ def filter_columns(cols: str, view, db, schema):
             r.append(col)
     return ','.join(r)
 
-
 def filter_ddl(ddl, view, db, schema):
     regexp = re.compile('(.*select)(.*)(from.*)', re.IGNORECASE)
     start = regexp.search(ddl).group(1)
@@ -45,9 +42,7 @@ def filter_ddl(ddl, view, db, schema):
     new_ddl = f'{start} {filtered_cols} {end}'
     return new_ddl
 
-
 def rename_target(ddl, view, db, schema):
-    print(ddl)
     regexp = re.compile('(.*create.* view )(\S*)( as.*)', re.IGNORECASE)
     start = regexp.search(ddl).group(1).strip()
     name = regexp.search(ddl).group(2).strip()
@@ -59,6 +54,14 @@ def rename_target(ddl, view, db, schema):
     new_ddl = f'{start} {path} {end}'
     return new_ddl
 
+def make_overwrite(ddl):
+    regexp = re.compile('.*create.{1,20}view\\s', re.IGNORECASE)
+    trim = regexp.search(ddl)
+    if trim is not None:
+        result = ddl.replace(trim.group(), 'CREATE OR REPLACE VIEW ')
+        return result
+    else:
+        return ddl
 
 def parser(cmd: str):
     cmd = cmd.replace('\n', '')
@@ -67,9 +70,6 @@ def parser(cmd: str):
         return None
     elif ls[0] == 'copy' and ls[1] != 'views':
         return None
-    elif ls[0] == 'copy' and len(ls) == 3:
-        if ls[2] != 'filter' and ls[2] != 'rename':
-            return None
     elif ls[0] == 'list' and ls[1] != 'views':
         return None
     elif ls[0] == 'sql' and len(ls) < 2:

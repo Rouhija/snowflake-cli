@@ -42,10 +42,3 @@ optional arguments:
 | **peek** view | display first row from a view |
 | **sql** query | execute sql query |
 | **exit** | Exit |
-
-### to-do
-- exit command and return to shell
-- parse out snowflakecomputing.com in config
-- check crypthography issue on linux
-- use flags in copy views instead of different commands
-- if not `create or replace view` -> change it

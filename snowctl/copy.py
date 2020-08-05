@@ -39,9 +39,9 @@ class Copycat(Controller):
         ddls = []
         for view in views:
             ddl = self.execute_query(f"select GET_DDL('view', '{view}')")[0][0]
-            # TO-DO
-            # format ddl if not `create or replace view` -> change it
-            ddls.append(ddl)
+            newddl = make_overwrite(ddl)
+            print(newddl)
+            ddls.append(newddl)
         return ddls
 
     def get_schemas(self):

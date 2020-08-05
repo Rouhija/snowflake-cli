@@ -13,6 +13,9 @@ pip --version
 Tämän jälkeen voi itse snowctl:n asentaa seuraavalla komennolla
 pip install snowctl
 
+Päivitys uusimpaan versioon:
+pip install snowctl --upgrade
+
 ## Käyttöohjeet
 Snowctl käynnistetään komentoikkunasta seuraavasti. Näin käynnistyy snowctl oma komentoikkuna. Ensimmäisellä kerralla ohjelma kysyy snowflake kredentiaaleja, tilin urlin yms.
 ```sh
@@ -47,3 +50,14 @@ Komennot snowctl konsolissa ovat seuraavat:
             - Suorita vapaamuotoinen sql kysely
         exit/ctrl+C
             - Poistu snowctl konsolista
+
+## Kehitys ja testaus
+[Kloonaa repo täältä](https://github.com/Rouhija/snowflake-cli)
+
+Luo virtuaaliympäristö
+```sh
+virtualenv venv -p python3
+venv/Scripts/Activate
+python setup.py develop
+-> snowctl
+```
