@@ -98,3 +98,6 @@ def ask_confirmation(query):
         return True
     else:
         return False
+
+def derive_ddl(cols, db, schema, view):
+    return f"CREATE OR REPLACE VIEW test.test.test AS (SELECT {', '.join(cols)} FROM {db}.{schema}.{view});"

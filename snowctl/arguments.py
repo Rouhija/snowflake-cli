@@ -20,5 +20,5 @@ def cmd_parser(user_input):
     try:
         args, unknown = parser.parse_known_args(user_input)
         return args
-    except SystemExit:
+    except SystemExit:  # Ignore exit on --help
         return None

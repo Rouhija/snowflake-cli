@@ -109,7 +109,7 @@ class Controller:
     def copy_views(self, derive=False, filter_cols=False, rename=False):
         from snowctl.copy import Copycat
         cp = Copycat(self.connection, self.engine, self.safe_mode)
-        cp.copy_views(self.curr_db, derive=derive, filter=filter_cols, rename=rename)
+        cp.copy(self.curr_db, self.curr_schema, derive=derive, filter_cols=filter_cols, rename=rename)
 
     def execute_query(self, query):
         LOG.debug(f'executing:\n{query}')

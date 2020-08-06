@@ -35,8 +35,18 @@ optional arguments:
 |---------|---------|
 | **help** | display help |
 | **use** database/schema/warehouse name | change context |
-| **copy** [-f] [-r] | copy views across schemas. -f for column filtering, -r for target renaming |
+| **copy** [-d] [-f] [-r] | copy views across schemas. -d for selecting columns from source, -f for column filtering, -r for target renaming |
 | **list** filter | list views in current context with an optional filter |
 | **peek** view | display first row from a view |
 | **sql** query | execute sql query |
 | **exit** | Exit |
+
+```
+usage: copy
+
+optional arguments:
+  -h, --help    show this help message and exit
+  -d, --derive  don't copy ddl, instead select columns from target view
+  -f, --filter  filter columns in target views
+  -r, --rename  rename target views
+```

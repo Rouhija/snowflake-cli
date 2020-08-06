@@ -36,12 +36,21 @@ class Copycat(Controller):
         return copy_these
 
     def get_ddls(self, views):
-        ddls = []
-        for view in views:
-            ddl = self.execute_query(f"select GET_DDL('view', '{view}')")[0][0]
-            newddl = make_overwrite(ddl)
-            ddls.append(newddl)
-        return ddls
+        ret = []
+        for v in views:
+            ddl = self.execute_query(f"select GET_DDL('view', '{v}')")[0][0]
+            r = make_overwrite(ddl)
+            ret.append(r)
+        return ret
+
+    def derive_ddls(self, views, db, schema):
+        ret = []
+        for v in views:
+            columns = self.execute_query(f"show columns in view {db}.{schema}.{v}")
+            cols = [c[2] for c in columns]
+            r = derive_ddl(cols, db, schema, v)
+            ret.append(r)
+        return ret
 
     def get_schemas(self):
         schemas = []
@@ -66,18 +75,20 @@ class Copycat(Controller):
         print(f'chose schema(s) {", ".join(copy_into)}')
         return copy_into
 
-    def copy_views(self, db, derive=False, filter_cols=False, rename=False):
+    def copy(self, db, schema, derive=False, filter_cols=False, rename=False):
         errors = 0
         clear_screen()
+
+        # sources and destinations
         copy_these = self.select_views()
-        if copy_these is None:
-            return
-        ddls = self.get_ddls(copy_these)
+        if copy_these is None: return None
         copy_into = self.select_schemas()
-        if copy_into is None:
-            return
-        if filter_cols:
-            clear_screen()    
+        if copy_into is None: return None
+
+        # get ddls or get columns if derive
+        ddls = self.derive_ddls(copy_these, db, schema) if derive else self.get_ddls(copy_these)
+
+        # copy views from sources to destinations and check flags --rename and --filter
         for i, view in enumerate(copy_these):
             for schema in copy_into:
                 query = format_ddl(ddls[i], view, schema, db)
