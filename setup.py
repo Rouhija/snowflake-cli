@@ -12,7 +12,7 @@ with open("README.md", "r") as f:
 
 dist = setup(
     name='snowctl',
-    version='1.0.6',
+    version='1.0.7',
 	url='https://github.com/Rouhija/snowflake-cli',
 	description="A cli tool for automating tasks in Snowflake Database",
     long_description=long_description,

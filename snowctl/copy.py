@@ -91,14 +91,20 @@ class Copycat(Controller):
         # copy views from sources to destinations and check flags --rename and --filter
         for i, view in enumerate(copy_these):
             for schema in copy_into:
+
+                # Format query based on flags
                 query = format_ddl(ddls[i], view, schema, db)
                 if filter_cols is True:
                     query = filter_ddl(query, view, db, schema)
                 if rename is True:
                     query = rename_target(query, view, db, schema)
+
+                # Prompt confirmation if -s flag is used
                 if self.safe_mode:
                     if not ask_confirmation(query):
                         continue
+                
+                # Actual query execution
                 try:
                     results = self.connection.execute(query)
                     response = results.fetchone()
