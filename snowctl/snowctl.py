@@ -21,10 +21,11 @@ BANNER = """\
 def print_usage():
     print('\nsnowctl usage:')
     print('\tuse <database|schema|warehouse> <name>')
-    print('\tcopy views [-f] [-r] - copy view(s) in currect context to other schemas as is')
+    print('\tcopy [-d, --derive] [-f, --filter] [-r, --rename] - copy view(s) in currect context to other schemas as is')
+    print('\t\t[-d] - don\'t copy ddl, instead select columns from target')
     print('\t\t[-f] - filter target view columns')
     print('\t\t[-r] - rename target view')
-    print('\tlist views <filter> - list views in current context with an optional filter')
+    print('\tlist <filter> - list views in current context with an optional filter')
     print('\tpeek <view> - show first row of data from the view')
     print('\tsql <query> - execute sql query')
     print('\texit / ctrl+C\n')
@@ -49,8 +50,8 @@ class Controller:
                 print(self.prompt, end='', flush=True)
                 user_input = sys.stdin.readline()
                 cmd = parser(user_input)
-                if self.operation(cmd) == -1:
-                    print('command not found')
+                if cmd != None:
+                    self.operation(cmd)  
         except Exception as e:
             LOG.error(e)
         finally:
@@ -61,12 +62,9 @@ class Controller:
             if cmd[0] == 'help':
                 print_usage()
             elif cmd[0] == 'copy':
-                try:
-                    args = cmd_parser(cmd[2:])
-                except Exception as e:
-                    print(e)
-                    pass
-                self.copy_views(filter_cols=args.filter, rename=args.rename)
+                args = cmd_parser(cmd[1:])
+                if args != None:
+                    self.copy_views(derive=args.derive, filter_cols=args.filter, rename=args.rename)
             elif cmd[0] == 'list':
                 self.list_views(cmd)
             elif cmd[0] == 'peek':
@@ -77,11 +75,8 @@ class Controller:
                 self.user_query(cmd)
             elif cmd[0] == 'exit':
                 self.exit_console()
-            else:
-                return -1
         except Exception as e:
-            print(f'Error. {e}')
-            return -2
+            print(f'Execution error: {e}')
 
     def use(self, cmd: list):
         results = self.connection.execute(f"use {cmd[1]} {cmd[2]}")
@@ -101,8 +96,8 @@ class Controller:
 
     def list_views(self, cmd):
         filter = False
-        if len(cmd) == 3:
-            filter = cmd[2]
+        if len(cmd) == 2:
+            filter = cmd[1]
         rows = self.execute_query('show views')
         for i, row in enumerate(rows):
             if filter:
@@ -111,10 +106,10 @@ class Controller:
             else:
                 print(f'{i} - {row[1]}')
 
-    def copy_views(self, filter_cols=False, rename=False):
+    def copy_views(self, derive=False, filter_cols=False, rename=False):
         from snowctl.copy import Copycat
         cp = Copycat(self.connection, self.engine, self.safe_mode)
-        cp.copy_views(self.curr_db, filter_cols=filter_cols, rename=rename)
+        cp.copy_views(self.curr_db, derive=derive, filter=filter_cols, rename=rename)
 
     def execute_query(self, query):
         LOG.debug(f'executing:\n{query}')
@@ -172,9 +167,11 @@ def main():
     elif args.version:
         print(VERSION)
     else:
-        print(BANNER)
         conf.write_config(args.configuration)
+        if args.configuration:
+            sys.exit()
         logger_options(args.debug)
+        print(BANNER)
         conn, engine = snowflake_connect(conf.read_config())
         try:
             c = Controller(conn, engine, args.safe)

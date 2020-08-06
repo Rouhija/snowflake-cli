@@ -33,12 +33,10 @@ optional arguments:
 ### Commands
 | CMD | ACTION |
 |---------|---------|
-| **help** | Display help |
+| **help** | display help |
 | **use** database/schema/warehouse name | change context |
-| **copy views** | copy views across schemas |
-| **copy views rename** | copy views across schemas with new name |
-| **copy views filter** | copy views across schemas with column filtering |
-| **list views** filter | list views in current context with an optional filter |
+| **copy** [-f] [-r] | copy views across schemas. -f for column filtering, -r for target renaming |
+| **list** filter | list views in current context with an optional filter |
 | **peek** view | display first row from a view |
 | **sql** query | execute sql query |
 | **exit** | Exit |

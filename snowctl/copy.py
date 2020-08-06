@@ -40,7 +40,6 @@ class Copycat(Controller):
         for view in views:
             ddl = self.execute_query(f"select GET_DDL('view', '{view}')")[0][0]
             newddl = make_overwrite(ddl)
-            print(newddl)
             ddls.append(newddl)
         return ddls
 
@@ -67,7 +66,7 @@ class Copycat(Controller):
         print(f'chose schema(s) {", ".join(copy_into)}')
         return copy_into
 
-    def copy_views(self, db, filter_cols=False, rename=False):
+    def copy_views(self, db, derive=False, filter_cols=False, rename=False):
         errors = 0
         clear_screen()
         copy_these = self.select_views()
@@ -87,7 +86,7 @@ class Copycat(Controller):
                 if rename is True:
                     query = rename_target(query, view, db, schema)
                 if self.safe_mode:
-                    if not self.ask_confirmation(query):
+                    if not ask_confirmation(query):
                         continue
                 try:
                     results = self.connection.execute(query)
@@ -98,12 +97,3 @@ class Copycat(Controller):
                     continue
                 print(f'{response[0]} (target: {db}.{schema})')
         print(f'\ncopy views finished: {errors} errors\n')
-
-    def ask_confirmation(self, query):
-        print(f'\n{query}')
-        print(f'Confirm? (y/n): ', end='', flush=True)
-        user_input = sys.stdin.readline().replace('\n', '').strip()
-        if user_input == 'y':
-            return True
-        else:
-            return False

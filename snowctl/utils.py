@@ -2,6 +2,14 @@ import re
 import os
 import sys
 
+CMDS = [
+    'use',
+    'copy',
+    'list',
+    'peek',
+    'sql',
+    'exit'
+]
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -66,14 +74,27 @@ def make_overwrite(ddl):
 def parser(cmd: str):
     cmd = cmd.replace('\n', '')
     ls = cmd.split(' ')
-    if ls[0] == 'use' and len(ls) != 3:
+    if cmd.strip() == '':
         return None
-    elif ls[0] == 'copy' and ls[1] != 'views':
+    elif ls[0] not in CMDS:
+        print(f'command not found: {ls[0]}')
         return None
-    elif ls[0] == 'list' and ls[1] != 'views':
+    elif ls[0] == 'use' and len(ls) != 3:
+        print(f'use: <database|schema|warehouse> <name>')
         return None
     elif ls[0] == 'sql' and len(ls) < 2:
+        print(f'peek: <view>')
         return None
     elif ls[0] == 'peek' and len(ls) != 2:
+        print(f'sql: <query>')
         return None
     return ls
+
+def ask_confirmation(query):
+    print(f'\n{query}')
+    print(f'Confirm? (y/n): ', end='', flush=True)
+    user_input = sys.stdin.readline().replace('\n', '').strip()
+    if user_input == 'y':
+        return True
+    else:
+        return False
