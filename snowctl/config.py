@@ -28,34 +28,45 @@ class Config:
                 password = 'snowflake_password'
                 wh = 'default_warehouse'
                 db = 'default_database'
+                curr_acc = None
+                curr_user = None
+                curr_wh = None
+                curr_db = None
+                curr_pw = None
 
                 if config_exists is False:
                     print('First time configuration, please provide following values')
                 else:
-                    self.config_parser.read(self.config_path)
-                    curr_acc = self.config_parser['snowflake']['snowflake_account']
-                    curr_user = self.config_parser['snowflake']['snowflake_user']
-                    curr_wh = self.config_parser['snowflake']['default_warehouse']
-                    curr_db= self.config_parser['snowflake']['default_database']
+                    try:
+                        self.config_parser.read(self.config_path)
+                        curr_acc = self.config_parser['snowflake']['snowflake_account']
+                        curr_user = self.config_parser['snowflake']['snowflake_user']
+                        curr_wh = self.config_parser['snowflake']['default_warehouse']
+                        curr_db = self.config_parser['snowflake']['default_database']
+                        curr_pw = self.config_parser['snowflake']['snowflake_password']
+                        if curr_pw: curr_pw = '*****'
+                    except:
+                        pass
 
-                print(f'snowflake_account ({curr_acc or ""}): ' , end='', flush=True)
+                print(f'snowflake_account ({curr_acc}): ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '').replace('.snowflakecomputing.com', '')
                 if val != '':
                     self.config_parser.set('snowflake', account, val)
-                print(f'snowflake_user ({curr_user or ""}): ' , end='', flush=True)
+                print(f'snowflake_user ({curr_user}): ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
                 if val != '':
                     self.config_parser.set('snowflake', user, val)
-                print(f'default_warehouse ({curr_wh or ""}): ' , end='', flush=True)
+                print(f'default_warehouse ({curr_wh}): ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
                 if val != '':
                     self.config_parser.set('snowflake', wh, val)
-                print(f'default_database ({curr_db or ""}): ' , end='', flush=True)
+                print(f'default_database ({curr_db}): ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
                 if val != '':
                     self.config_parser.set('snowflake', db, val)
-                val = getpass.getpass('snowflake_password: ')
-                self.config_parser.set('snowflake', password, val)
+                val = getpass.getpass(f'snowflake_password ({curr_pw}): ')
+                if val != '':
+                    self.config_parser.set('snowflake', password, val)
 
                 with open(self.config_path, 'w') as f:
                     self.config_parser.write(f)
