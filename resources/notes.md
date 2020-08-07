@@ -16,7 +16,3 @@ pip install snowctl --upgrade
 
 ### Reading
 - [PyPi](https://dzone.com/articles/executable-package-pip-install)
-
-### to-do
-- check crypthography issue on linux
-- delete config.ini on uninstall

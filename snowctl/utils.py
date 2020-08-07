@@ -59,6 +59,8 @@ def rename_target(ddl, view, db, schema):
     print(f'\n{view}: target -> {db}.{schema}')
     print('choose a new name for the view: ', end='', flush=True)
     new_name = sys.stdin.readline().replace('\n', '').strip()
+    if new_name == '':
+        return None
     path = f'{db}.{schema}.{new_name}'
     new_ddl = f'{start} {path} {end}'
     return new_ddl
@@ -84,10 +86,10 @@ def parser(cmd: str):
         print(f'use: <database|schema|warehouse> <name>')
         return None
     elif ls[0] == 'sql' and len(ls) < 2:
-        print(f'peek: <view>')
+        print(f'sql: <query>')
         return None
     elif ls[0] == 'peek' and len(ls) != 2:
-        print(f'sql: <query>')
+        print(f'peek: <view>')
         return None
     return ls
 

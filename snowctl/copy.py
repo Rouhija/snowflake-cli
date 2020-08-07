@@ -98,6 +98,9 @@ class Copycat(Controller):
                     query = filter_ddl(query, view, db, schema)
                 if rename is True:
                     query = rename_target(query, view, db, schema)
+                    if query == None:
+                        print('name cannot be empty')
+                        continue
 
                 # Prompt confirmation if -s flag is used
                 if self.safe_mode:
