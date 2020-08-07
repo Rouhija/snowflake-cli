@@ -18,4 +18,4 @@ def snowflake_connect(conf):
         print('connected')
         return (conn, engine)
     except Exception as e:
-        sys.exit(e)
+        sys.exit(f'{e}\nrewrite config with `snowctl -c`')
