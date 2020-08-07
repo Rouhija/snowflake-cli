@@ -1,14 +1,15 @@
-# Description
-A cli tool for automating tasks in Snowflake Database. Mainly for copying views with column filtering at the moment.
+# Snowctl
+A cli tool for automating tasks in Snowflake Database.
 
 ### Installation
 Install python3 (version 3.6 and higher)
 - [Windows installation](https://www.python.org/downloads/release/python-385/)
 - [Linux installation](https://docs.python-guide.org/starting/install3/linux/)
 
-Use Python's pip installer to install snowctl
+Use Python's pip installer to install or update snowctl
 ```sh
 pip install snowctl
+pip install snowctl --upgrade
 ```
 
 ### Usage
@@ -34,8 +35,8 @@ optional arguments:
 | CMD | ACTION |
 |---------|---------|
 | **help** | display help |
-| **use** database/schema/warehouse name | change context |
-| **copy** [-d] [-f] [-r] | copy views across schemas. -d for selecting columns from source, -f for column filtering, -r for target renaming |
+| **use** db/schema/warehouse name | change context |
+| **copy** [-h] [-d] [-f] [-r] | copy views across schemas, see flags below |
 | **list** filter | list views in current context with an optional filter |
 | **peek** view | display first row from a view |
 | **sql** query | execute sql query |
@@ -45,8 +46,8 @@ optional arguments:
 usage: copy
 
 optional arguments:
-  -h, --help    show this help message and exit
-  -d, --derive  don't copy ddl, instead select columns from target view
-  -f, --filter  filter columns in target views
+  -h, --help    show this help message
+  -d, --derive  create new view by selecting all cols from source view instead of copying ddl
+  -f, --filter  filter out columns of target view when copying
   -r, --rename  rename target views
 ```

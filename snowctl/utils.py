@@ -8,7 +8,8 @@ CMDS = [
     'list',
     'peek',
     'sql',
-    'exit'
+    'exit',
+    'help'
 ]
 
 def clear_screen():

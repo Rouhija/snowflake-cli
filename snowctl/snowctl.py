@@ -2,7 +2,6 @@ import sys
 import signal
 import logging
 import pkg_resources
-from time import sleep
 from snowctl.utils import *
 from snowctl.config import Config
 from snowctl.logger import logger_options
@@ -19,16 +18,20 @@ BANNER = """\
 """
 
 def print_usage():
-    print('\nsnowctl usage:')
-    print('\tuse <database|schema|warehouse> <name>')
-    print('\tcopy [-d, --derive] [-f, --filter] [-r, --rename] - copy view(s) in currect context to other schemas as is')
-    print('\t\t[-d] - don\'t copy ddl, instead select columns from target')
-    print('\t\t[-f] - filter target view columns')
-    print('\t\t[-r] - rename target view')
-    print('\tlist <filter> - list views in current context with an optional filter')
-    print('\tpeek <view> - show first row of data from the view')
-    print('\tsql <query> - execute sql query')
-    print('\texit / ctrl+C\n')
+    print(
+    '''
+    snowctl usage:
+        copy [-d, --derive] [-f, --filter] [-r, --rename] - copy view(s) to other schemas
+             [-d] - create new view by selecting all cols from source view instead of copying ddl
+             [-f] - filter out columns of target view when copying
+             [-r] - rename target views
+        use <db|schema|warehouse> <name>
+        list <filter> - list views in current context with an optional filter
+        peek <view> - show first row of data from the view
+        sql <query> - execute sql query
+        exit / ctrl+C
+    '''
+    )
 
 
 class Controller:

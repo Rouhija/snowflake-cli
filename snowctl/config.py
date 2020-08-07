@@ -33,7 +33,7 @@ class Config:
                     print('First time configuration, please provide following values')
 
                 print('snowflake_account (e.g. "xy12345.east-us-2.azure"): ' , end='', flush=True)
-                val = sys.stdin.readline().replace('\n', '').replace('snowflakecomputing.com', '')
+                val = sys.stdin.readline().replace('\n', '').replace('snowflakecomputing.com', '').replace('https://', '')
                 self.config_parser.set('snowflake', account, val)
                 print('snowflake_user: ' , end='', flush=True)
                 val = sys.stdin.readline().replace('\n', '')
@@ -49,6 +49,7 @@ class Config:
 
                 with open(self.config_path, 'w') as f:
                     self.config_parser.write(f)
+                print('Configuration written')
             except KeyboardInterrupt:
                 sys.exit('\nconfig file was not updated')
             except Exception as e:
