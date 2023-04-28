@@ -20,7 +20,7 @@ dist = setup(
     author="Sami Rouhe",
     author_email="rouhesami@gmail.com",
 	packages=find_packages(),
-    install_requires=['snowflake-connector-python==2.2.4', 'snowflake-sqlalchemy==1.2.3'],
+    install_requires=['snowflake-connector-python==2.8.3', 'snowflake-sqlalchemy==1.2.3'],
     entry_points={
         'console_scripts': [
 			'snowctl = snowctl.snowctl:main',
